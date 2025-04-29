@@ -1,401 +1,372 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoCloudUploadOutline, IoTrashOutline, IoCheckmark, IoChevronDownOutline, IoClose } from 'react-icons/io5';
 
-const phoneModels = [
-  { value: 'iphone15pro', label: 'iPhone 15 Pro' },
-  { value: 'iphone15', label: 'iPhone 15' },
-  { value: 'iphone14pro', label: 'iPhone 14 Pro' },
-  { value: 'iphone14', label: 'iPhone 14' },
-  { value: 'iphone13', label: 'iPhone 13' },
-  { value: 'iphoneSE', label: 'iPhone SE' },
-  { value: 'samsungS24Ultra', label: 'Samsung Galaxy S24 Ultra' },
-  { value: 'samsungS24', label: 'Samsung Galaxy S24' },
-  { value: 'samsungS23', label: 'Samsung Galaxy S23' },
-  { value: 'samsungA54', label: 'Samsung Galaxy A54' },
-  { value: 'pixel8Pro', label: 'Google Pixel 8 Pro' },
-  { value: 'pixel8', label: 'Google Pixel 8' },
-  { value: 'oneplus12', label: 'OnePlus 12' }
-];
+export default function AddAccessories() {
+  const [formData, setFormData] = useState({
+    accessoryName: '',
+    accessoryType: '',
+    price: '',
+    phoneModel: '',
+    brand: '',
+    compatibleModels: [],
+    accessoryDescription: ''
+  });
 
-const accessoryTypes = [
-  { value: 'charger', label: 'Charger' },
-  { value: 'case', label: 'Case' },
-  { value: 'earphones', label: 'Earphones' },
-  { value: 'screenProtector', label: 'Screen Protector' },
-  { value: 'powerBank', label: 'Power Bank' },
-  { value: 'cable', label: 'Cable' },
-  { value: 'stand', label: 'Phone Stand' },
-  { value: 'other', label: 'Other' }
-];
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-function InputField({ label, name, type = 'text', placeholder, register, rules, error }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={name} className="text-sm font-medium text-gray-700">
-        {label}
-        {rules?.required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      <input
-        id={name}
-        type={type}
-        placeholder={placeholder}
-        className={`w-full px-4 py-2.5 rounded-lg border ${error ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
-        {...register(name, rules)}
-      />
-      {error && (
-        <p className="text-red-500 text-sm mt-1">{error.message}</p>
-      )}
-    </div>
-  );
-}
+  const phoneModels = [
+    { value: 'iphone15pro', label: 'iPhone 15 Pro' },
+    { value: 'iphone15', label: 'iPhone 15' },
+    { value: 'iphone14pro', label: 'iPhone 14 Pro' },
+    { value: 'iphone14', label: 'iPhone 14' },
+    { value: 'iphone13', label: 'iPhone 13' },
+    { value: 'iphoneSE', label: 'iPhone SE' },
+    { value: 'samsungS24Ultra', label: 'Samsung Galaxy S24 Ultra' },
+    { value: 'samsungS24', label: 'Samsung Galaxy S24' },
+    { value: 'samsungS23', label: 'Samsung Galaxy S23' },
+    { value: 'samsungA54', label: 'Samsung Galaxy A54' },
+    { value: 'pixel8Pro', label: 'Google Pixel 8 Pro' },
+    { value: 'pixel8', label: 'Google Pixel 8' },
+    { value: 'oneplus12', label: 'OnePlus 12' }
+  ];
 
-function SelectField({ label, name, placeholder, options, register, rules, error }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={name} className="text-sm font-medium text-gray-700">
-        {label}
-        {rules?.required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      <div className="relative">
-        <select
-          id={name}
-          className={`w-full px-4 py-2.5 rounded-lg border ${error ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none bg-white`}
-          {...register(name, rules)}
-        >
-          <option value="">{placeholder}</option>
-          {options.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <IoChevronDownOutline className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-      </div>
-      {error && (
-        <p className="text-red-500 text-sm mt-1">{error.message}</p>
-      )}
-    </div>
-  );
-}
+  const accessoryTypes = [
+    { value: 'charger', label: 'Charger' },
+    { value: 'case', label: 'Case' },
+    { value: 'earphones', label: 'Earphones' },
+    { value: 'screenProtector', label: 'Screen Protector' },
+    { value: 'powerBank', label: 'Power Bank' },
+    { value: 'cable', label: 'Cable' },
+    { value: 'stand', label: 'Phone Stand' },
+    { value: 'other', label: 'Other' }
+  ];
 
-function MultiSelect({ label, name, placeholder, options, setValue, register, error }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
-  register(name);
-
-  const toggleOption = (option) => {
-    let newSelected;
-    if (selectedOptions.some(item => item.value === option.value)) {
-      newSelected = selectedOptions.filter(item => item.value !== option.value);
-    } else {
-      newSelected = [...selectedOptions, option];
-    }
-    setSelectedOptions(newSelected);
-    setValue(name, newSelected.map(item => item.value));
+  const validate = () => {
+    const newErrors = {};
+    
+    if (!formData.accessoryName) newErrors.accessoryName = "Accessory name is required";
+    else if (formData.accessoryName.length > 100) newErrors.accessoryName = "Name cannot exceed 100 characters";
+    else if (!/^[a-zA-Z0-9 -]*$/.test(formData.accessoryName)) newErrors.accessoryName = "No special symbols allowed";
+    
+    if (!formData.accessoryType) newErrors.accessoryType = "Accessory type is required";
+    
+    if (!formData.price) newErrors.price = "Price is required";
+    else if (formData.price <= 0) newErrors.price = "Price must be positive";
+    
+    if (!formData.phoneModel) newErrors.phoneModel = "Phone model is required";
+    
+    if (formData.brand && formData.brand.length > 50) newErrors.brand = "Brand name too long";
+    else if (!formData.brand) newErrors.brand = "Brand name is required";
+    
+    if (formData.accessoryDescription && formData.accessoryDescription.length > 500) 
+      newErrors.accessoryDescription = "Description too long";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <div className="relative">
-        <div
-          className={`w-full px-4 py-2.5 rounded-lg border ${error ? 'border-red-500' : 'border-gray-300'} cursor-pointer min-h-[42px] flex items-center`}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {selectedOptions.length === 0 ? (
-            <span className="text-gray-400">{placeholder}</span>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {selectedOptions.map(option => (
-                <span
-                  key={option.value}
-                  className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full flex items-center gap-1"
-                >
-                  {option.label}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleOption(option);
-                    }}
-                    className="hover:bg-blue-200 rounded-full p-0.5"
-                  >
-                    <IoClose className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-auto"
-            >
-              {options.map(option => (
-                <div
-                  key={option.value}
-                  className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 ${
-                    selectedOptions.some(item => item.value === option.value)
-                      ? 'bg-blue-50 text-blue-600'
-                      : ''
-                  }`}
-                  onClick={() => toggleOption(option)}
-                >
-                  {option.label}
-                  {selectedOptions.some(item => item.value === option.value) && (
-                    <IoCheckmark className="text-blue-600" />
-                  )}
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-function FileUpload({ label, name, onChange, error, previewImage }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <div className={`border-2 border-dashed rounded-lg ${error ? 'border-red-500' : 'border-gray-300'}`}>
-        {!previewImage ? (
-          <label className="flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
-            <IoCloudUploadOutline className="w-12 h-12 text-blue-500 mb-2" />
-            <span className="text-gray-600">Click to upload image</span>
-            <p className="text-sm text-gray-400 mt-1">JPG or PNG, max 5MB</p>
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              onChange={onChange}
-              className="hidden"
-            />
-          </label>
-        ) : (
-          <div className="relative p-4">
-            <img
-              src={previewImage}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                onChange({ target: { files: [] } });
-              }}
-              className="absolute top-6 right-6 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors duration-200"
-            >
-              <IoTrashOutline className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-      </div>
-      {error && (
-        <p className="text-red-500 text-sm mt-1">{error.message}</p>
-      )}
-    </div>
-  );
-}
+  const handleCompatibleModelsChange = (selectedValues) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      compatibleModels: selectedValues 
+    }));
+  };
 
-function AddAccessories() {
-  const [previewImage, setPreviewImage] = useState(null);
-  
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-    watch 
-  } = useForm({
-    defaultValues: {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      setIsSubmitting(true);
+      try {
+        const dataToSend = {
+          accessoryName: formData.accessoryName,
+          accessoryType: formData.accessoryType,
+          price: Number(formData.price),
+          phoneModel: formData.phoneModel,
+          brand: formData.brand,
+          compatibleModels: formData.compatibleModels,
+          accessoryDescription: formData.accessoryDescription
+        };
+
+        const response = await fetch('http://localhost:5000/api/accessories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataToSend)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to submit form');
+        }
+
+        const result = await response.json();
+        console.log('Success:', result);
+        alert('Accessory added successfully!');
+        
+        // Reset form
+        setFormData({
+          accessoryName: '',
+          accessoryType: '',
+          price: '',
+          phoneModel: '',
+          brand: '',
+          compatibleModels: [],
+          accessoryDescription: ''
+        });
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        alert(error.message || 'Failed to add accessory. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
       accessoryName: '',
       accessoryType: '',
       price: '',
       phoneModel: '',
       brand: '',
       compatibleModels: [],
-      accessoryDescription: '',
-      accessoryImage: null
-    }
-  });
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!['image/jpeg', 'image/png'].includes(file.type)) {
-        alert('Please upload only JPG or PNG images');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size should not exceed 5MB');
-        return;
-      }
-      
-      setValue('accessoryImage', file);
-      const reader = new FileReader();
-      reader.onload = (event) => setPreviewImage(event.target.result);
-      reader.readAsDataURL(file);
-    } else {
-      setValue('accessoryImage', null);
-      setPreviewImage(null);
-    }
+      accessoryDescription: ''
+    });
+    setErrors({});
   };
-
-  const onSubmit = async (data) => {
-    try {
-      console.log('Form data:', data);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Accessory added successfully!');
-      reset();
-      setPreviewImage(null);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to add accessory. Please try again.');
-    }
-  };
-
-  const watchedPhoneModel = watch('phoneModel');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-10">
-        <h1 className="text-3xl font-semibold text-gray-900 text-center mb-8">
-          Add New Accessory
-        </h1>
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10">
+      <h2 className="text-3xl font-semibold text-gray-900 text-center mb-8">
+        Add New Accessory
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input 
+          label="Accessory Name" 
+          name="accessoryName" 
+          value={formData.accessoryName}
+          onChange={handleChange} 
+          error={errors.accessoryName} 
+        />
         
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <InputField
-                label="Accessory Name"
-                name="accessoryName"
-                placeholder="Enter accessory name"
-                register={register}
-                rules={{ 
-                  required: "Accessory name is required",
-                  maxLength: { value: 100, message: "Name cannot exceed 100 characters" },
-                  pattern: { 
-                    value: /^[a-zA-Z0-9 -]*$/,
-                    message: "No special symbols allowed"
-                  }
-                }}
-                error={errors.accessoryName}
-              />
-              
-              <SelectField
-                label="Accessory Type"
-                name="accessoryType"
-                placeholder="Select accessory type"
-                options={accessoryTypes}
-                register={register}
-                rules={{ required: "Accessory type is required" }}
-                error={errors.accessoryType}
-              />
-              
-              <InputField
-                label="Price (LKR)"
-                name="price"
-                type="number"
-                placeholder="Enter price"
-                register={register}
-                rules={{ 
-                  required: "Price is required",
-                  min: { value: 0, message: "Price must be positive" }
-                }}
-                error={errors.price}
-              />
-              
-              <SelectField
-                label="Phone Model"
-                name="phoneModel"
-                placeholder="Select phone model"
-                options={phoneModels}
-                register={register}
-                rules={{ required: "Phone model is required" }}
-                error={errors.phoneModel}
-              />
-            </div>
-            
-            <div className="space-y-6">
-              <InputField
-                label="Brand"
-                name="brand"
-                placeholder="Enter brand name (optional)"
-                register={register}
-                rules={{ maxLength: { value: 50, message: "Brand name too long" } }}
-                error={errors.brand}
-              />
-              
-              <MultiSelect
-                label="Compatible Models"
-                name="compatibleModels"
-                placeholder="Select compatible models"
-                options={phoneModels.filter(model => model.value !== watchedPhoneModel)}
-                setValue={setValue}
-                register={register}
-                error={errors.compatibleModels}
-              />
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  {...register("accessoryDescription", {
-                    maxLength: { value: 500, message: "Description too long" }
-                  })}
-                  placeholder="Enter description (optional)"
-                  className={`w-full px-4 py-2.5 rounded-lg border ${errors.accessoryDescription ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-h-[120px] resize-y`}
-                />
-                {errors.accessoryDescription && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.accessoryDescription.message}
-                  </p>
-                )}
-              </div>
-              
-              <FileUpload
-                label="Image Upload"
-                name="accessoryImage"
-                onChange={handleImageChange}
-                error={errors.accessoryImage}
-                previewImage={previewImage}
-              />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-4 pt-6">
-            <button
-              type="button"
-              onClick={() => {
-                reset();
-                setPreviewImage(null);
-              }}
-              className="px-6 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300"
-            >
-              {isSubmitting ? 'Adding...' : 'Add Accessory'}
-            </button>
-          </div>
-        </form>
+        <Select 
+          label="Accessory Type" 
+          name="accessoryType" 
+          value={formData.accessoryType}
+          options={accessoryTypes} 
+          onChange={handleChange} 
+          error={errors.accessoryType} 
+        />
+        
+        <Input 
+          label="Price (LKR)" 
+          name="price" 
+          type="number" 
+          value={formData.price}
+          onChange={handleChange} 
+          error={errors.price} 
+        />
+        
+        <Select 
+          label="Phone Model" 
+          name="phoneModel" 
+          value={formData.phoneModel}
+          options={phoneModels} 
+          onChange={handleChange} 
+          error={errors.phoneModel} 
+        />
+        
+        <Input 
+          label="Brand" 
+          name="brand" 
+          value={formData.brand}
+          onChange={handleChange} 
+          error={errors.brand} 
+        />
+        
+        <MultiSelect 
+          label="Compatible Models" 
+          name="compatibleModels" 
+          options={phoneModels.filter(model => model.value !== formData.phoneModel)} 
+          value={formData.compatibleModels}
+          onChange={handleCompatibleModelsChange} 
+          error={errors.compatibleModels} 
+        />
+        
+        <TextArea 
+          label="Description" 
+          name="accessoryDescription" 
+          value={formData.accessoryDescription}
+          onChange={handleChange} 
+          error={errors.accessoryDescription} 
+        />
+        
+        <div className="col-span-1 md:col-span-2 flex justify-end gap-4 pt-6">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-6 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300"
+          >
+            {isSubmitting ? 'Adding...' : 'Add Accessory'}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-export default AddAccessories;
+function Input({ label, name, type = "text", value, onChange, error }) {
+  return (
+    <div className="flex flex-col">
+      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+        {label}
+      </label>
+      <input
+        type={type}
+        name={name}
+        id={name}
+        value={value}
+        onChange={onChange}
+        className={`border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+      />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function Select({ label, name, options, value, onChange, error }) {
+  return (
+    <div className="flex flex-col">
+      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+        {label}
+      </label>
+      <select
+        name={name}
+        id={name}
+        value={value}
+        onChange={onChange}
+        className={`border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+      >
+        <option value="">Select {label}</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function MultiSelect({ label, name, options, value, onChange, error }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedLabels = options
+    .filter(opt => value.includes(opt.value))
+    .map(opt => opt.label);
+
+  const handleOptionClick = (optValue) => {
+    let newValue;
+    if (value.includes(optValue)) {
+      newValue = value.filter(v => v !== optValue);
+    } else {
+      newValue = [...value, optValue];
+    }
+    onChange(newValue);
+  };
+
+  return (
+    <div className="flex flex-col">
+      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+        {label}
+      </label>
+      <div className="relative">
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className={`border rounded-xl px-4 py-2 cursor-pointer flex items-center justify-between ${
+            error ? "border-red-500" : "border-gray-300"
+          }`}
+        >
+          <div className="flex flex-wrap gap-1">
+            {selectedLabels.length > 0 ? (
+              selectedLabels.map((label, index) => (
+                <span key={index} className="bg-blue-100 text-blue-800 text-sm px-2 py-0.5 rounded-full">
+                  {label}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-400">Select {label} (Optional)</span>
+            )}
+          </div>
+          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {isOpen && (
+          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-48 overflow-auto">
+            {options.map((opt) => (
+              <div
+                key={opt.value}
+                onClick={() => handleOptionClick(opt.value)}
+                className={`px-4 py-2 cursor-pointer hover:bg-gray-50 flex items-center ${
+                  value.includes(opt.value) ? "bg-blue-50" : ""
+                }`}
+              >
+                <div className={`w-4 h-4 mr-2 border rounded ${
+                  value.includes(opt.value) ? "bg-blue-500 border-blue-500" : "border-gray-300"
+                }`}>
+                  {value.includes(opt.value) && (
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function TextArea({ label, name, value, onChange, error }) {
+  return (
+    <div className="flex flex-col">
+      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+        {label}
+      </label>
+      <textarea
+        name={name}
+        id={name}
+        value={value}
+        onChange={onChange}
+        className={`border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32 resize-y ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+        placeholder="Enter description (optional)"
+      />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+    </div>
+  );
+}
