@@ -65,7 +65,7 @@ const Dashboard = () => {
 
         {/* Accessories Management */}
         <div
-        onClick={() => navigate("/")}  
+        onClick={() => navigate("/accessoriesHome")}  
         className="p-4 bg-white shadow-lg rounded-2xl cursor-pointer hover:shadow-xl transition"
         >
           <div className="mb-4 flex items-center space-x-4">
