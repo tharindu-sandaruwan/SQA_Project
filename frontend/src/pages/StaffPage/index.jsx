@@ -89,96 +89,119 @@ const StaffPage = () => {
   };
 
   return (
-    <form
-      className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg"
-      onSubmit={handleSubmit}
-    >
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Add Staff</h2>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-gray-800 text-white py-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center px-4">
+          <h1 className="text-2xl font-bold cursor-pointer">Grand Mobile</h1>
+          <nav>
+            <button className="mr-4 hover:underline">Promotions</button>
+            <button className="mr-4 hover:underline">Staff</button>
+            <button className="mr-4 hover:underline">Phones</button>
+            <button className="hover:underline">Accessories</button>
+          </nav>
+        </div>
+      </header>
 
-      {successMessage && (
-        <p className="mb-4 text-green-500 font-medium">{successMessage}</p>
-      )}
+      {/* Main Content */}
+      <form
+        className="flex-grow max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-5"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Add Staff</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {[
-          { label: "First Name", name: "firstName", type: "text", placeholder: "John" },
-          { label: "Last Name", name: "lastName", type: "text", placeholder: "Doe" },
-          { label: "Address", name: "address", type: "text", placeholder: "123 Main St" },
-          { label: "Age", name: "age", type: "number", placeholder: "25" },
-          { label: "Birth Date", name: "birthDate", type: "date" },
-          { label: "Email", name: "email", type: "email", placeholder: "john.doe@example.com" },
-          { label: "Contact", name: "contact", type: "text", placeholder: "1234567890" },
-          { label: "Role", name: "role", type: "text", placeholder: "Manager" },
-          { label: "Basic Salary", name: "salary", type: "number", placeholder: "50000" },
-        ].map(({ label, name, type, placeholder }) => (
-          <div key={name}>
+        {successMessage && (
+          <p className="mb-4 text-green-500 font-medium">{successMessage}</p>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {[
+            { label: "First Name", name: "firstName", type: "text", placeholder: "John" },
+            { label: "Last Name", name: "lastName", type: "text", placeholder: "Doe" },
+            { label: "Address", name: "address", type: "text", placeholder: "123 Main St" },
+            { label: "Age", name: "age", type: "number", placeholder: "25" },
+            { label: "Birth Date", name: "birthDate", type: "date" },
+            { label: "Email", name: "email", type: "email", placeholder: "john.doe@example.com" },
+            { label: "Contact", name: "contact", type: "text", placeholder: "1234567890" },
+            { label: "Role", name: "role", type: "text", placeholder: "Manager" },
+            { label: "Basic Salary", name: "salary", type: "number", placeholder: "50000" },
+          ].map(({ label, name, type, placeholder }) => (
+            <div key={name}>
+              <label className="block text-gray-700 font-medium mb-1">
+                {label}
+              </label>
+              <input
+                type={type}
+                name={name}
+                value={formData[name]}
+                onChange={handleChange}
+                placeholder={placeholder}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              />
+              {errors[name] && (
+                <p className="text-red-500 text-sm mt-1">{errors[name]}</p>
+              )}
+            </div>
+          ))}
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Gender</label>
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Male"
+                  onChange={handleChange}
+                  checked={formData.gender === "Male"}
+                  className="mr-2"
+                />
+                Male
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Female"
+                  onChange={handleChange}
+                  checked={formData.gender === "Female"}
+                  className="mr-2"
+                />
+                Female
+              </label>
+            </div>
+          </div>
+
+          <div>
             <label className="block text-gray-700 font-medium mb-1">
-              {label}
+              User Image
             </label>
             <input
-              type={type}
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              placeholder={placeholder}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              type="file"
+              onChange={handleFileChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
-            {errors[name] && (
-              <p className="text-red-500 text-sm mt-1">{errors[name]}</p>
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
             )}
           </div>
-        ))}
-
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Gender</label>
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="gender"
-                value="Male"
-                onChange={handleChange}
-                checked={formData.gender === "Male"}
-                className="mr-2"
-              />
-              Male
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="gender"
-                value="Female"
-                onChange={handleChange}
-                checked={formData.gender === "Female"}
-                className="mr-2"
-              />
-              Female
-            </label>
-          </div>
         </div>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">
-            User Image
-          </label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-          {errors.image && (
-            <p className="text-red-500 text-sm mt-1">{errors.image}</p>
-          )}
-        </div>
-      </div>
+        <button
+          type="submit"
+          className="mt-6 w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition"
+        >
+          Add Staff
+        </button>
+      </form>
 
-      <button
-        type="submit"
-        className="mt-6 w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition"
-      >
-        Add Staff
-      </button>
-    </form>
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-4 mt-5">
+        <div className="container mx-auto text-center">
+          <p>&copy; 2025 Phone Shop Management. All Rights Reserved.</p>
+        </div>
+      </footer>
+    </div>
   );
 };
 
