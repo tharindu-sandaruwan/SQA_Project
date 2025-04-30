@@ -1,66 +1,186 @@
 describe('PhoneForm Component', () => {
+  const imagePath = 'sample-phone.jpg'; 
+
   beforeEach(() => {
-    cy.visit('http://localhost:5173/phones'); // Adjust if needed
+    cy.visit('http://localhost:5173/phones'); 
   });
 
-  it('1. Successfully submits the form with valid data', () => {
-    cy.window().then((win) => {
-      cy.spy(win.console, 'log').as('consoleLog');
-    });
-
-    cy.get('input[name="phoneName"]').type('iPhone 15');
+  it('TC001 - Submit form with all valid inputs', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
     cy.get('input[name="brand"]').type('Apple');
-    cy.get('input[name="modelNumber"]').type('A2890');
+    cy.get('input[name="modelNumber"]').type('A2649');
     cy.get('input[name="warrantyPeriod"]').type('12');
     cy.get('select[name="condition"]').select('New');
     cy.get('input[name="storageCapacity"]').type('128GB');
-    cy.get('input[name="color"]').type('Black');
-    cy.get('input[name="purchasePrice"]').type('800');
-    cy.get('input[name="sellingPrice"]').type('1000');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
     cy.get('input[name="quantity"]').type('10');
     cy.get('input[name="dateAdded"]').type('2025-04-30');
-
-    cy.screenshot('1-before-submit-success'); // 🔍 Screenshot before submit
-
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
     cy.get('button[type="submit"]').click();
-
-    cy.get('@consoleLog').should('have.been.calledWithMatch', {
-      phoneName: 'iPhone 15',
-    });
-
-    cy.screenshot('1-after-submit-success'); // ✅ Screenshot after submit
+    cy.contains('Phone successfully submitted!').should('be.visible');
+    cy.screenshot('TC001-success');
   });
 
-  it('2. Shows validation errors when required fields are empty', () => {
+  it('TC002 - Submit form with empty Phone Name', () => {
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
     cy.get('button[type="submit"]').click();
-
-    cy.contains('Phone Name is required').should('exist');
-    cy.contains('Brand is required').should('exist');
-    cy.contains('Model Number is required').should('exist');
-    cy.contains('Storage Capacity is required').should('exist');
-    cy.contains('Color is required').should('exist');
-    cy.contains('Purchase Price must be positive').should('exist');
-    cy.contains('Selling Price should not be less than Purchase Price').should('exist');
-    cy.contains('Quantity must be a number').should('exist');
-    cy.contains('Date Added is required').should('exist');
-
-    cy.screenshot('2-validation-errors'); // ⚠️ Screenshot with validation errors
+    cy.contains('Phone Name is required').should('exist').and('be.visible');
+    cy.screenshot('TC002-phone-name-required');
   });
 
-  it('3. Shows error when selling price is lower than purchase price', () => {
-    cy.get('input[name="purchasePrice"]').type('900');
+  it('TC003 - Submit form with negative Purchase Price', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('-100');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.contains('Purchase Price must be positive').should('exist').and('be.visible');
+    cy.screenshot('TC003-negative-purchase-price');
+  });
+
+  it('TC004 - Submit form with empty Brand field', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.contains('Brand is required').should('exist').and('be.visible');
+    cy.screenshot('TC004-brand-required');
+  });
+
+  it('TC005 - Selling Price less than Purchase Price', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
     cy.get('input[name="sellingPrice"]').type('800');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
     cy.get('button[type="submit"]').click();
-
-    cy.contains('Selling Price should not be less than Purchase Price').should('exist');
-    cy.screenshot('3-selling-less-than-purchase'); // ⚠️ Screenshot for this error
+    cy.get('p').contains('Selling Price should not be less than Purchase Price').should('be.visible');
+    cy.screenshot('TC005-selling-price-less');
   });
 
-  it('4. Shows error when quantity is not a number', () => {
-    cy.get('input[name="quantity"]').type('abc');
+  it('TC006 - Submit form with invalid data type in Quantity', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('Ten');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
     cy.get('button[type="submit"]').click();
-
-    cy.contains('Quantity must be a number').should('exist');
-    cy.screenshot('4-invalid-quantity'); // ⚠️ Screenshot for invalid quantity
+    cy.contains('Quantity must be a number').should('exist').and('be.visible');
+    cy.screenshot('TC006-quantity-invalid');
   });
+
+  it('TC007 - Submit form with 0 in Warranty Period', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('0');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.contains('Warranty Period must be greater than 0').should('exist').and('be.visible');
+    cy.screenshot('TC007-warranty-zero');
+  });
+
+  it('TC008 - Submit form with missing Condition', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    // Condition not selected
+    cy.get('input[name="storageCapacity"]').type('128GB');
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.get('p').contains('Condition is required').should('be.visible');
+    cy.screenshot('TC008-condition-required');
+  });
+
+  it('TC009 - Submit form with empty Storage Capacity', () => {
+    cy.get('input[name="phoneName"]').type('iPhone 14');
+    cy.get('input[name="brand"]').type('Apple');
+    cy.get('input[name="modelNumber"]').type('A2649');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    // Skip Storage Capacity
+    cy.get('input[name="color"]').type('Midnight');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('10');
+    cy.get('input[name="dateAdded"]').type('2025-04-30');
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.contains('Storage Capacity is required').should('exist').and('be.visible');
+    cy.screenshot('TC009-storage-capacity-required');
+  });
+
+  it('TC010 - Submit form with empty Date Added field', () => {
+    cy.get('input[name="phoneName"]').type('Samsung Galaxy A12');
+    cy.get('input[name="brand"]').type('Samsung');
+    cy.get('input[name="modelNumber"]').type('A125F');
+    cy.get('input[name="warrantyPeriod"]').type('12');
+    cy.get('select[name="condition"]').select('New');
+    cy.get('input[name="storageCapacity"]').type('64');
+    cy.get('input[name="color"]').type('Black');
+    cy.get('input[name="purchasePrice"]').type('1000');
+    cy.get('input[name="sellingPrice"]').type('1200');
+    cy.get('input[name="quantity"]').type('5');
+    // Skip dateAdded
+    cy.get('input[type="file"]').selectFile(`cypress/fixtures/${imagePath}`, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.contains('Date Added is required').should('exist').and('be.visible');
+    cy.screenshot('TC010-date-added-required');
+  });
+  
 });
