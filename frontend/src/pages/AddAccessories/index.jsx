@@ -13,6 +13,7 @@ export default function AddAccessories() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const phoneModels = [
     { value: 'iphone15pro', label: 'iPhone 15 Pro' },
@@ -45,7 +46,7 @@ export default function AddAccessories() {
     const newErrors = {};
     
     if (!formData.accessoryName) newErrors.accessoryName = "Accessory name is required";
-    else if (formData.accessoryName.length > 100) newErrors.accessoryName = "Name cannot exceed 100 characters";
+    else if (formData.accessoryName.length > 20) newErrors.accessoryName = "Name cannot exceed 20 characters";
     else if (!/^[a-zA-Z0-9 -]*$/.test(formData.accessoryName)) newErrors.accessoryName = "No special symbols allowed";
     
     if (!formData.accessoryType) newErrors.accessoryType = "Accessory type is required";
@@ -55,11 +56,12 @@ export default function AddAccessories() {
     
     if (!formData.phoneModel) newErrors.phoneModel = "Phone model is required";
     
-    if (formData.brand && formData.brand.length > 50) newErrors.brand = "Brand name too long";
-    else if (!formData.brand) newErrors.brand = "Brand name is required";
+    if (formData.brand && formData.brand.length > 20) newErrors.brand = "Brand name too long";
     
-    if (formData.accessoryDescription && formData.accessoryDescription.length > 500) 
+    if (formData.accessoryDescription && formData.accessoryDescription.length > 200) 
       newErrors.accessoryDescription = "Description too long";
+
+    if (!previewImage) newErrors.accessoryImage = "Image is required";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -77,56 +79,98 @@ export default function AddAccessories() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        alert('Please upload only JPG or PNG images');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size should not exceed 5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewImage(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      setIsSubmitting(true);
       try {
-        const dataToSend = {
-          accessoryName: formData.accessoryName,
-          accessoryType: formData.accessoryType,
-          price: Number(formData.price),
-          phoneModel: formData.phoneModel,
-          brand: formData.brand,
-          compatibleModels: formData.compatibleModels,
-          accessoryDescription: formData.accessoryDescription
-        };
-
-        const response = await fetch('http://localhost:5000/api/accessories', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dataToSend)
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to submit form');
-        }
-
-        const result = await response.json();
-        console.log('Success:', result);
+        setIsSubmitting(true);
+        console.log('Form data:', formData);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
         alert('Accessory added successfully!');
-        
-        // Reset form
-        setFormData({
-          accessoryName: '',
-          accessoryType: '',
-          price: '',
-          phoneModel: '',
-          brand: '',
-          compatibleModels: [],
-          accessoryDescription: ''
-        });
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        alert(error.message || 'Failed to add accessory. Please try again.');
+        resetForm();
+      // } catch (error) {
+      //   console.error('Error submitting form:', error);
+      //   alert('Failed to add accessory. Please try again.');
       } finally {
         setIsSubmitting(false);
       }
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (validate()) {
+  //     setIsSubmitting(true);
+  //     try {
+  //       const dataToSend = {
+  //         accessoryName: formData.accessoryName,
+  //         accessoryType: formData.accessoryType,
+  //         price: Number(formData.price),
+  //         phoneModel: formData.phoneModel,
+  //         brand: formData.brand,
+  //         compatibleModels: formData.compatibleModels,
+  //         accessoryDescription: formData.accessoryDescription
+  //       };
+
+  //       const response = await fetch('http://localhost:5000/api/accessories', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(dataToSend)
+  //       });
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         throw new Error(errorData.error || 'Failed to submit form');
+  //       }
+
+  //       const result = await response.json();
+  //       console.log('Success:', result);
+  //       alert('Accessory added successfully!');
+        
+  //       // Reset form
+  //       setFormData({
+  //         accessoryName: '',
+  //         accessoryType: '',
+  //         price: '',
+  //         phoneModel: '',
+  //         brand: '',
+  //         compatibleModels: [],
+  //         accessoryDescription: ''
+  //       });
+  //       setPreviewImage(null);
+  //     } catch (error) {
+  //       console.error('Error submitting form:', error);
+  //       alert(error.message || 'Failed to add accessory. Please try again.');
+  //     } finally {
+  //       setIsSubmitting(false);
+  //     }
+  //   }
+  // };
 
   const handleReset = () => {
     setFormData({
@@ -138,6 +182,7 @@ export default function AddAccessories() {
       compatibleModels: [],
       accessoryDescription: ''
     });
+    setPreviewImage(null);
     setErrors({});
   };
 
@@ -154,6 +199,7 @@ export default function AddAccessories() {
           value={formData.accessoryName}
           onChange={handleChange} 
           error={errors.accessoryName} 
+          placeholder="e.g., iPhone 15 Pro Case"
         />
         
         <Select 
@@ -171,7 +217,8 @@ export default function AddAccessories() {
           type="number" 
           value={formData.price}
           onChange={handleChange} 
-          error={errors.price} 
+          error={errors.price}
+          placeholder="e.g., 1990"
         />
         
         <Select 
@@ -184,11 +231,12 @@ export default function AddAccessories() {
         />
         
         <Input 
-          label="Brand" 
+          label="Brand (Optional)" 
           name="brand" 
           value={formData.brand}
           onChange={handleChange} 
           error={errors.brand} 
+          placeholder="e.g., Spigen, Apple"
         />
         
         <MultiSelect 
@@ -206,6 +254,14 @@ export default function AddAccessories() {
           value={formData.accessoryDescription}
           onChange={handleChange} 
           error={errors.accessoryDescription} 
+        />
+
+        <FileInput 
+          label="Image Upload" 
+          name="accessoryImage" 
+          onChange={handleImageChange} 
+          error={errors.accessoryImage}
+          previewImage={previewImage}
         />
         
         <div className="col-span-1 md:col-span-2 flex justify-end gap-4 pt-6">
@@ -230,7 +286,7 @@ export default function AddAccessories() {
   );
 }
 
-function Input({ label, name, type = "text", value, onChange, error }) {
+function Input({ label, name, type = "text", value, onChange, error, placeholder  }) {
   return (
     <div className="flex flex-col">
       <label htmlFor={name} className="mb-1 font-medium text-gray-700">
@@ -242,6 +298,7 @@ function Input({ label, name, type = "text", value, onChange, error }) {
         id={name}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
         className={`border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
           error ? "border-red-500" : "border-gray-300"
         }`}
@@ -366,6 +423,46 @@ function TextArea({ label, name, value, onChange, error }) {
         }`}
         placeholder="Enter description (optional)"
       />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function FileInput({ label, name, onChange, error, previewImage }) {
+  return (
+    <div className="flex flex-col">
+      <label className="mb-1 font-medium text-gray-700">{label}</label>
+      <div className={`border-2 border-dashed rounded-xl p-2 ${error ? "border-red-500" : "border-gray-300"}`}>
+        {!previewImage ? (
+          <label className="flex flex-col items-center justify-center p-6 cursor-pointer hover:bg-gray-50 transition-colors">
+            <div className="text-blue-500 text-4xl mb-2">↑</div>
+            <span className="text-gray-600">Click to upload image</span>
+            <p className="text-sm text-gray-400 mt-1">JPG or PNG, max 5MB</p>
+            <input
+              type="file"
+              name={name}
+              accept=".jpg,.jpeg,.png"
+              onChange={onChange}
+              className="hidden"
+            />
+          </label>
+        ) : (
+          <div className="relative p-2">
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="w-full h-40 object-cover rounded-lg"
+            />
+            <button
+              type="button"
+              onClick={() => onChange({ target: { files: [] } })}
+              className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+      </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
