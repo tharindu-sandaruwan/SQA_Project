@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddAccessories() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     accessoryName: '',
     accessoryType: '',
@@ -111,68 +113,13 @@ export default function AddAccessories() {
         await new Promise(resolve => setTimeout(resolve, 1000));
         alert('Accessory added successfully!');
         resetForm();
-      // } catch (error) {
-      //   console.error('Error submitting form:', error);
-      //   alert('Failed to add accessory. Please try again.');
       } finally {
         setIsSubmitting(false);
       }
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (validate()) {
-  //     setIsSubmitting(true);
-  //     try {
-  //       const dataToSend = {
-  //         accessoryName: formData.accessoryName,
-  //         accessoryType: formData.accessoryType,
-  //         price: Number(formData.price),
-  //         phoneModel: formData.phoneModel,
-  //         brand: formData.brand,
-  //         compatibleModels: formData.compatibleModels,
-  //         accessoryDescription: formData.accessoryDescription
-  //       };
-
-  //       const response = await fetch('http://localhost:5000/api/accessories', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify(dataToSend)
-  //       });
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json();
-  //         throw new Error(errorData.error || 'Failed to submit form');
-  //       }
-
-  //       const result = await response.json();
-  //       console.log('Success:', result);
-  //       alert('Accessory added successfully!');
-        
-  //       // Reset form
-  //       setFormData({
-  //         accessoryName: '',
-  //         accessoryType: '',
-  //         price: '',
-  //         phoneModel: '',
-  //         brand: '',
-  //         compatibleModels: [],
-  //         accessoryDescription: ''
-  //       });
-  //       setPreviewImage(null);
-  //     } catch (error) {
-  //       console.error('Error submitting form:', error);
-  //       alert(error.message || 'Failed to add accessory. Please try again.');
-  //     } finally {
-  //       setIsSubmitting(false);
-  //     }
-  //   }
-  // };
-
-  const handleReset = () => {
+  const resetForm = () => {
     setFormData({
       accessoryName: '',
       accessoryType: '',
@@ -186,106 +133,161 @@ export default function AddAccessories() {
     setErrors({});
   };
 
-  return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10">
-      <h2 className="text-3xl font-semibold text-gray-900 text-center mb-8">
-        Add New Accessory
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input 
-          label="Accessory Name" 
-          name="accessoryName" 
-          value={formData.accessoryName}
-          onChange={handleChange} 
-          error={errors.accessoryName} 
-          placeholder="e.g., iPhone 15 Pro Case"
-        />
-        
-        <Select 
-          label="Accessory Type" 
-          name="accessoryType" 
-          value={formData.accessoryType}
-          options={accessoryTypes} 
-          onChange={handleChange} 
-          error={errors.accessoryType} 
-        />
-        
-        <Input 
-          label="Price (LKR)" 
-          name="price" 
-          type="number" 
-          value={formData.price}
-          onChange={handleChange} 
-          error={errors.price}
-          placeholder="e.g., 1990"
-        />
-        
-        <Select 
-          label="Phone Model" 
-          name="phoneModel" 
-          value={formData.phoneModel}
-          options={phoneModels} 
-          onChange={handleChange} 
-          error={errors.phoneModel} 
-        />
-        
-        <Input 
-          label="Brand (Optional)" 
-          name="brand" 
-          value={formData.brand}
-          onChange={handleChange} 
-          error={errors.brand} 
-          placeholder="e.g., Spigen, Apple"
-        />
-        
-        <MultiSelect 
-          label="Compatible Models" 
-          name="compatibleModels" 
-          options={phoneModels.filter(model => model.value !== formData.phoneModel)} 
-          value={formData.compatibleModels}
-          onChange={handleCompatibleModelsChange} 
-          error={errors.compatibleModels} 
-        />
-        
-        <TextArea 
-          label="Description" 
-          name="accessoryDescription" 
-          value={formData.accessoryDescription}
-          onChange={handleChange} 
-          error={errors.accessoryDescription} 
-        />
+  const handleReset = () => {
+    resetForm();
+  };
 
-        <FileInput 
-          label="Image Upload" 
-          name="accessoryImage" 
-          onChange={handleImageChange} 
-          error={errors.accessoryImage}
-          previewImage={previewImage}
-        />
-        
-        <div className="col-span-1 md:col-span-2 flex justify-end gap-4 pt-6">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-6 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-gray-800 text-white py-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center px-4">
+          <h1
+            onClick={() => navigate("/")}
+            className="text-2xl font-bold cursor-pointer"
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300"
-          >
-            {isSubmitting ? 'Adding...' : 'Add Accessory'}
-          </button>
+            Grand Mobile
+          </h1>
+          <nav>
+            <button
+              onClick={() => navigate("/promotions")}
+              className="mr-4 hover:underline"
+            >
+              Promotions
+            </button>
+            <button
+              onClick={() => navigate("/displayStaff")}
+              className="mr-4 hover:underline"
+            >
+              Staff
+            </button>
+            <button
+              onClick={() => navigate("/phones")}
+              className="mr-4 hover:underline"
+            >
+              Phones
+            </button>
+            <button
+              onClick={() => navigate("/accessoriesHome")}
+              className="hover:underline"
+            >
+              Accessories
+            </button>
+          </nav>
         </div>
-      </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 my-10">
+          <h2 className="text-3xl font-semibold text-gray-900 text-center mb-8">
+            Add New Accessory
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input 
+              label="Accessory Name" 
+              name="accessoryName" 
+              value={formData.accessoryName}
+              onChange={handleChange} 
+              error={errors.accessoryName} 
+              placeholder="e.g., iPhone 15 Pro Case"
+            />
+            
+            <Select 
+              label="Accessory Type" 
+              name="accessoryType" 
+              value={formData.accessoryType}
+              options={accessoryTypes} 
+              onChange={handleChange} 
+              error={errors.accessoryType} 
+            />
+            
+            <Input 
+              label="Price (LKR)" 
+              name="price" 
+              type="number" 
+              value={formData.price}
+              onChange={handleChange} 
+              error={errors.price}
+              placeholder="e.g., 1990"
+            />
+            
+            <Select 
+              label="Phone Model" 
+              name="phoneModel" 
+              value={formData.phoneModel}
+              options={phoneModels} 
+              onChange={handleChange} 
+              error={errors.phoneModel} 
+            />
+            
+            <Input 
+              label="Brand (Optional)" 
+              name="brand" 
+              value={formData.brand}
+              onChange={handleChange} 
+              error={errors.brand} 
+              placeholder="e.g., Spigen, Apple"
+            />
+            
+            <MultiSelect 
+              label="Compatible Models" 
+              name="compatibleModels" 
+              options={phoneModels.filter(model => model.value !== formData.phoneModel)} 
+              value={formData.compatibleModels}
+              onChange={handleCompatibleModelsChange} 
+              error={errors.compatibleModels} 
+            />
+            
+            <TextArea 
+              label="Description" 
+              name="accessoryDescription" 
+              value={formData.accessoryDescription}
+              onChange={handleChange} 
+              error={errors.accessoryDescription} 
+            />
+
+            <FileInput 
+              label="Image Upload" 
+              name="accessoryImage" 
+              onChange={handleImageChange} 
+              error={errors.accessoryImage}
+              previewImage={previewImage}
+            />
+            
+            <div className="col-span-1 md:col-span-2 flex justify-end gap-4 pt-6">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="px-6 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300"
+              >
+                {isSubmitting ? 'Adding...' : 'Add Accessory'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-4">
+        <div className="container mx-auto text-center">
+          <p>&copy; 2025 Grand Mobile. All Rights Reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
 
+// Reusable component implementations remain the same...
 function Input({ label, name, type = "text", value, onChange, error, placeholder  }) {
   return (
     <div className="flex flex-col">
