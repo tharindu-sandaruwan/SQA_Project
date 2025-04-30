@@ -18,7 +18,7 @@ const StaffPage = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState("");
+  const [isPopupVisible, setPopupVisible] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -61,9 +61,8 @@ const StaffPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSuccessMessage("");
     if (validateForm()) {
-      setSuccessMessage("Staff added successfully!");
+      setPopupVisible(true);
       setFormData({
         firstName: "",
         lastName: "",
@@ -136,10 +135,6 @@ const StaffPage = () => {
         onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Add Staff</h2>
-
-        {successMessage && (
-          <p className="mb-4 text-green-500 font-medium">{successMessage}</p>
-        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {[
@@ -221,6 +216,23 @@ const StaffPage = () => {
           Add Staff
         </button>
       </form>
+
+      {/* Popup */}
+      {isPopupVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+            <h3 className="text-xl font-bold mb-4 text-green-800">
+              Staff added successfully!
+            </h3>
+            <button
+              onClick={() => setPopupVisible(false)}
+              className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-4 mt-5">
