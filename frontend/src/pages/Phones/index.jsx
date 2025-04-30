@@ -8,7 +8,7 @@ export default function PhoneForm() {
     brand: "",
     modelNumber: "",
     warrantyPeriod: "",
-    condition: "New",
+    condition: "",
     storageCapacity: "",
     color: "",
     purchasePrice: "",
@@ -32,17 +32,20 @@ export default function PhoneForm() {
     if (!formData.color) newErrors.color = "Color is required";
     if (!formData.purchasePrice || formData.purchasePrice <= 0)
       newErrors.purchasePrice = "Purchase Price must be positive";
-    if (
-      !formData.sellingPrice ||
-      formData.sellingPrice < formData.purchasePrice
-    )
+    const purchase = Number(formData.purchasePrice);
+    const selling = Number(formData.sellingPrice);
+    if (!formData.sellingPrice || selling <= 0) {
+      newErrors.sellingPrice = "Selling Price must be positive";
+    } else if (selling < purchase) {
       newErrors.sellingPrice =
         "Selling Price should not be less than Purchase Price";
+    }
     if (!formData.quantity || isNaN(formData.quantity))
       newErrors.quantity = "Quantity must be a number";
+
     if (formData.warrantyPeriod && formData.warrantyPeriod <= 0)
       newErrors.warrantyPeriod = "Warranty Period must be greater than 0";
-    if (!formData.condition) newErrors.condition = "Condition is required";
+    // if (!formData.condition) newErrors.condition = "Condition is required";
     if (!formData.dateAdded) newErrors.dateAdded = "Date Added is required";
     if (!formData.image) newErrors.image = "Phone image is required";
 
@@ -59,12 +62,11 @@ export default function PhoneForm() {
     e.preventDefault();
     if (validate()) {
       console.log("Submitted Data:", formData);
-      toast.success("Phone successfully submitted!");
+      toast.success("Phone Successfully Added!");
     } else {
       toast.error("Please fix the errors in the form before submitting.");
     }
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -73,7 +75,7 @@ export default function PhoneForm() {
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-10">
-      <ToastContainer  position="top-center" />
+      <ToastContainer position="top-center" />
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">
         Add New Phone
       </h2>
@@ -110,9 +112,11 @@ export default function PhoneForm() {
           label="Condition"
           name="condition"
           options={["New", "Used", "Refurbished"]}
+          value={formData.condition}
           onChange={handleChange}
           error={errors.condition}
         />
+
         <Input
           label="Storage Capacity"
           name="storageCapacity"
@@ -199,7 +203,7 @@ function Input({ label, name, type = "text", onChange, error }) {
   );
 }
 
-function Select({ label, name, options, onChange, error }) {
+function Select({ label, name, options, value, onChange, error }) {
   return (
     <div className="flex flex-col">
       <label htmlFor={name} className="mb-1 font-medium text-gray-700">
@@ -208,9 +212,13 @@ function Select({ label, name, options, onChange, error }) {
       <select
         name={name}
         id={name}
+        value={value}
         onChange={onChange}
         className="border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
+        <option value="" disabled hidden>
+          Select one
+        </option>
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
