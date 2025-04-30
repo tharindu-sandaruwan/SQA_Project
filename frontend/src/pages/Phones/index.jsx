@@ -125,3 +125,4 @@ function Select({ label, name, options, onChange, error }) {
     </div>
   );
 }
+
