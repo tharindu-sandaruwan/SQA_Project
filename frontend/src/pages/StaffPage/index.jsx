@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const StaffPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -93,12 +95,37 @@ const StaffPage = () => {
       {/* Header */}
       <header className="bg-gray-800 text-white py-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center px-4">
-          <h1 className="text-2xl font-bold cursor-pointer">Grand Mobile</h1>
+          <h1
+            onClick={() => navigate("/")}
+            className="text-2xl font-bold cursor-pointer"
+          >
+            Grand Mobile
+          </h1>
           <nav>
-            <button className="mr-4 hover:underline">Promotions</button>
-            <button className="mr-4 hover:underline">Staff</button>
-            <button className="mr-4 hover:underline">Phones</button>
-            <button className="hover:underline">Accessories</button>
+            <button
+              onClick={() => navigate("/promotions")}
+              className="mr-4 hover:underline"
+            >
+              Promotions
+            </button>
+            <button
+              onClick={() => navigate("/displayStaff")}
+              className="mr-4 hover:underline"
+            >
+              Staff
+            </button>
+            <button
+              onClick={() => navigate("/phones")}
+              className="mr-4 hover:underline"
+            >
+              Phones
+            </button>
+            <button
+              onClick={() => navigate("/accessoriesHome")}
+              className="hover:underline"
+            >
+              Accessories
+            </button>
           </nav>
         </div>
       </header>
@@ -198,7 +225,7 @@ const StaffPage = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-4 mt-5">
         <div className="container mx-auto text-center">
-          <p>&copy; 2025 Phone Shop Management. All Rights Reserved.</p>
+          <p>&copy; 2025 Grand Mobile. All Rights Reserved.</p>
         </div>
       </footer>
     </div>
