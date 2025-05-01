@@ -1,6 +1,6 @@
 describe('Add Accessories Form Validation', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173/addAccessories'); // Adjust the URL as needed for your application
+    cy.visit('http://localhost:5173/addAccessories');
   });
 
   const testData = {
@@ -11,8 +11,8 @@ describe('Add Accessories Form Validation', () => {
     negativePrice: '-100',
     accessoryType: 'case',
     phoneModel: 'iphone15',
-    brand: 'Spigen',
-    description: 'Premium protective case for iPhone 15',
+    brand: 'Spigen'
+    
   };
 
   const fillValidForm = (includeImage = true) => {
@@ -21,6 +21,10 @@ describe('Add Accessories Form Validation', () => {
     cy.get('input[name="price"]').type(testData.validPrice);
     cy.get('select[name="phoneModel"]').select(testData.phoneModel);
     cy.get('input[name="brand"]').type(testData.brand);
+    
+    if (includeImage) {
+      cy.get('input[type="file"]').selectFile('cypress/fixtures/test-accessory-image.jpg', { force: true });
+    }
   };
 
   it('TC01: Validate accessory name field empty', () => {
@@ -64,23 +68,52 @@ describe('Add Accessories Form Validation', () => {
   });
 
   it('TC06: Should reset the form when cancel button is clicked', () => {
-    // Fill in some data
     cy.get('input[name="accessoryName"]').type(testData.validName);
     cy.get('select[name="accessoryType"]').select(testData.accessoryType);
     cy.get('input[name="price"]').type(testData.validPrice);
     
-    // Take screenshot before cancel
     cy.screenshot('TC06-form-before-cancel');
     
-    // Click cancel
     cy.get('button').contains('Cancel').click();
     
-    // Verify fields are cleared
     cy.get('input[name="accessoryName"]').should('have.value', '');
     cy.get('select[name="accessoryType"]').should('have.value', '');
     cy.get('input[name="price"]').should('have.value', '');
     
-    // Screenshot after form reset
     cy.screenshot('TC06-form-after-cancel');
   });
+
+  it('TC07: Validate accessory name field with special characters', () => {
+    fillValidForm(false);
+    cy.get('input[name="accessoryName"]').clear().type(testData.invalidName);
+    cy.contains('Save').click();
+    cy.contains('No special symbols allowed').should('be.visible');
+    cy.screenshot('TC07-accessory-name-special-chars');
+  });
+
+  it('TC08: Validate accessory type field empty', () => {
+    fillValidForm(false);
+    cy.get('select[name="accessoryType"]').select('');
+    cy.contains('Save').click();
+    cy.contains('Accessory type is required').should('be.visible');
+    cy.screenshot('TC08-accessory-type-empty');
+  });
+
+  it('TC09: Validate phone model field empty', () => {
+    fillValidForm(false);
+    cy.get('select[name="phoneModel"]').select('');
+    cy.contains('Save').click();
+    cy.contains('Phone model is required').should('be.visible');
+    cy.screenshot('TC09-phone-model-empty');
+  });
+
+  it('TC10: Submit form with all valid fields and image', () => {
+    cy.writeFile('cypress/fixtures/test-accessory-image.jpg', 'binary content here', 'binary')
+      .then(() => {
+        fillValidForm(true);
+        cy.contains('Save').click();
+        cy.screenshot('TC10-all-fields-valid-with-image');
+      });
+});
+  
 });
