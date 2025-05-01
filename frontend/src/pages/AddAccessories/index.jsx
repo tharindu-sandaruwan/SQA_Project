@@ -270,7 +270,7 @@ export default function AddAccessories() {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300"
               >
-                {isSubmitting ? 'Adding...' : 'Add Accessory'}
+                {isSubmitting ? 'Adding...' : 'Save'}
               </button>
             </div>
           </div>
