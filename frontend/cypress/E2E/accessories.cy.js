@@ -57,7 +57,7 @@ describe('Add Accessories Form Validation', () => {
     cy.contains('Accessory type is required').should('be.visible');
     cy.contains('Price is required').should('be.visible');
     cy.contains('Phone model is required').should('be.visible');
-    cy.contains('Image is required').should('be.visible');
+    //cy.contains('Image is required').should('be.visible');
     cy.screenshot('TC04-all-fields-empty');
   });
 
@@ -114,6 +114,15 @@ describe('Add Accessories Form Validation', () => {
         cy.contains('Save').click();
         cy.screenshot('TC10-all-fields-valid-with-image');
       });
-});
+
+  });
+
+//   it('TC11: Validate accessory name character limit', () => {
+//   const longName = 'This accessory name is way too long and exceeds the limit';
+//   cy.get('input[name="accessoryName"]').type(longName);
+//   cy.contains('Save').click();
+//   cy.contains('Name cannot exceed 20 characters').should('be.visible');
+//   cy.screenshot('TC11-name-too-long');
+// });
   
 });

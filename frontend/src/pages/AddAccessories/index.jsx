@@ -63,7 +63,7 @@ export default function AddAccessories() {
     if (formData.accessoryDescription && formData.accessoryDescription.length > 200) 
       newErrors.accessoryDescription = "Description too long";
 
-    if (!previewImage) newErrors.accessoryImage = "Image is required";
+    //if (!previewImage) newErrors.accessoryImage = "Image is required";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -81,27 +81,29 @@ export default function AddAccessories() {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!['image/jpeg', 'image/png'].includes(file.type)) {
-        alert('Please upload only JPG or PNG images');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size should not exceed 5MB');
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setPreviewImage(null);
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  setErrors(prev => ({ ...prev, accessoryImage: '' })); // Clear previous error
+  
+  if (file) {
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      setErrors(prev => ({ ...prev, accessoryImage: 'Please upload only JPG or PNG images' }));
+      return;
     }
-  };
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, accessoryImage: 'File size should not exceed 5MB' }));
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    setPreviewImage(null);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
