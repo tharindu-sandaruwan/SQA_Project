@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Dashboard,Phones, StaffPage, AddAccessories, AccessoriesHome, Promotions} from "./pages";
+import { Dashboard,Phones, StaffPage, AddAccessories, AccessoriesHome, Promotions, AddPromotions} from "./pages";
 import DisplayStaffsPage from "./pages/DisplayStaffsPage";
 
 function App() {
@@ -13,6 +13,7 @@ function App() {
         <Route path="/accessoriesHome" element={<AccessoriesHome />} />
         <Route path="/promotions" element={<Promotions />} />
         <Route path="/displayStaff" element={<DisplayStaffsPage />} />
+        <Route path="/addPromotions" element={<AddPromotions />} />
       </Routes>
     </Router>
   );
