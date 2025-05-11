@@ -214,7 +214,7 @@ if (!formData.quantity || isNaN(quantity)) {
             )}
           </div>
 
-          <div className="col-span-1 md:col-span-2 text-right">
+          <div className="col-span-1 md:col-span-2 text-center">
             <button
               type="submit"
               className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all"
