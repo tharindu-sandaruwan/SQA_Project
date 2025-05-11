@@ -1,76 +1,72 @@
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { Trash2, Eye } from "lucide-react";
 
-export default function PhoneForm() {
-  const [formData, setFormData] = useState({
-    phoneName: "",
-    brand: "",
-    modelNumber: "",
-    warrantyPeriod: "",
-    condition: "",
-    storageCapacity: "",
-    color: "",
-    purchasePrice: "",
-    sellingPrice: "",
-    quantity: "",
-    dateAdded: "",
-    image: null,
-  });
+const phones = [
+  {
+    id: 1,
+    name: "iPhone 15 Pro",
+    price: 999,
+    description: "Apple's flagship phone with A17 chip and titanium body.",
+    image: "/20.webp",
+    specs: '6.1" display, 128GB storage, A17 Pro chip',
+  },
+  {
+    id: 2,
+    name: "Samsung Galaxy S24",
+    price: 899,
+    description: "Samsung's latest with AMOLED display and AI camera.",
+    image: "/21.jpg",
+    specs: '6.8" AMOLED, 256GB storage, Snapdragon 8 Gen 3',
+  },
+  {
+    id: 3,
+    name: "Google Pixel 8",
+    price: 799,
+    description: "Clean Android with great AI features and camera.",
+    image: "/22.jpeg",
+    specs: '6.2" OLED, 128GB, Tensor G3 chip',
+  },
+  {
+    id: 4,
+    name: "OnePlus 12",
+    price: 749,
+    description: "Fast performance with Oxygen OS and smooth display.",
+    image: "/23.jpeg",
+    specs: '6.7" AMOLED, 512GB, Snapdragon 8 Gen 2',
+  },
+  {
+    id: 1,
+    name: "iPhone 15 Pro",
+    price: 999,
+    description: "Apple's flagship phone with A17 chip and titanium body.",
+    image: "/21.jpg",
+    specs: '6.1" display, 128GB storage, A17 Pro chip',
+  },
+  {
+    id: 2,
+    name: "Samsung Galaxy S24",
+    price: 899,
+    description: "Samsung's latest with AMOLED display and AI camera.",
+    image: "/20.webp",
+    specs: '6.8" AMOLED, 256GB storage, Snapdragon 8 Gen 3',
+  },
+];
 
-  const [errors, setErrors] = useState({});
+export default function PhoneShopPage() {
+  const [phoneList, setPhoneList] = useState(phones);
+  const [selectedPhoneId, setSelectedPhoneId] = useState(null);
+  const navigate = useNavigate();
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.phoneName) newErrors.phoneName = "Phone Name is required";
-    if (!formData.brand) newErrors.brand = "Brand is required";
-    if (!formData.modelNumber)
-      newErrors.modelNumber = "Model Number is required";
-    if (!formData.storageCapacity)
-      newErrors.storageCapacity = "Storage Capacity is required";
-    if (!formData.color) newErrors.color = "Color is required";
-    if (!formData.purchasePrice || formData.purchasePrice <= 0)
-      newErrors.purchasePrice = "Purchase Price must be positive";
-    const purchase = Number(formData.purchasePrice);
-    const selling = Number(formData.sellingPrice);
-    if (!formData.sellingPrice || selling <= 0) {
-      newErrors.sellingPrice = "Selling Price must be positive";
-    } else if (selling < purchase) {
-      newErrors.sellingPrice =
-        "Selling Price should not be less than Purchase Price";
-    }
-    if (!formData.quantity || isNaN(formData.quantity))
-      newErrors.quantity = "Quantity must be a number";
-
-    if (formData.warrantyPeriod && formData.warrantyPeriod <= 0)
-      newErrors.warrantyPeriod = "Warranty Period must be greater than 0";
-    // if (!formData.condition) newErrors.condition = "Condition is required";
-    if (!formData.dateAdded) newErrors.dateAdded = "Date Added is required";
-    if (!formData.image) newErrors.image = "Phone image is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      console.log("Submitted Data:", formData);
-      toast.success("Phone Successfully Added!");
-    } else {
-      toast.error("Please fix the errors in the form before submitting.");
+  const handleDelete = (id) => {
+    const confirmed = confirm("Are you sure you want to delete this phone?");
+    if (confirmed) {
+      setPhoneList((prev) => prev.filter((phone) => phone.id !== id));
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, image: file }));
+  const handleViewDetails = (id) => {
+    setSelectedPhoneId((prevId) => (prevId === id ? null : id));
   };
 
   return (
@@ -112,114 +108,66 @@ export default function PhoneForm() {
           </nav>
         </div>
       </header>
+      <div className="p-4 max-w-6xl mx-auto">
+        <div className="mb-6 flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Phone Management</h2>
+          <button
+            onClick={() => navigate("/AddPhone")}
+            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+          >
+            + Add Phone
+          </button>
+        </div>
 
-      <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-10">
-        <ToastContainer position="top-center" />
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-          Add New Phone
-        </h2>
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          <Input
-            label="Phone Name"
-            name="phoneName"
-            onChange={handleChange}
-            error={errors.phoneName}
-          />
-          <Input
-            label="Brand"
-            name="brand"
-            onChange={handleChange}
-            error={errors.brand}
-          />
-          <Input
-            label="Model Number"
-            name="modelNumber"
-            onChange={handleChange}
-            error={errors.modelNumber}
-          />
-          <Input
-            label="Warranty Period (Months)"
-            name="warrantyPeriod"
-            type="number"
-            onChange={handleChange}
-            error={errors.warrantyPeriod}
-          />
-          <Select
-            label="Condition"
-            name="condition"
-            options={["New", "Used", "Refurbished"]}
-            value={formData.condition}
-            onChange={handleChange}
-            error={errors.condition}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {phoneList.map((phone) => (
+            <div key={phone.id} className="p-4 bg-white rounded-xl shadow-sm">
+              <div className="flex flex-col items-center text-center gap-3">
+                <img
+                  src={phone.image}
+                  alt={phone.name}
+                  className="h-36 object-contain"
+                />
+                <h3 className="font-semibold text-base">{phone.name}</h3>
+                <p className="text-sm text-gray-500">{phone.description}</p>
+                <p className="text-orange-500 font-bold text-lg">
+                  ${phone.price.toFixed(2)}
+                </p>
+                <div className="flex gap-3 mt-2">
+                  <button
+                    onClick={() => handleViewDetails(phone.id)}
+                    className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white text-sm hover:bg-blue-600"
+                  >
+                    <Eye size={16} /> View
+                  </button>
+                  <button
+                    onClick={() => handleDelete(phone.id)}
+                    className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 text-white text-sm hover:bg-red-600"
+                  >
+                    <Trash2 size={16} /> Delete
+                  </button>
+                </div>
 
-          <Input
-            label="Storage Capacity"
-            name="storageCapacity"
-            onChange={handleChange}
-            error={errors.storageCapacity}
-          />
-          <Input
-            label="Color"
-            name="color"
-            onChange={handleChange}
-            error={errors.color}
-          />
-          <Input
-            label="Purchase Price"
-            name="purchasePrice"
-            type="number"
-            onChange={handleChange}
-            error={errors.purchasePrice}
-          />
-          <Input
-            label="Selling Price"
-            name="sellingPrice"
-            type="number"
-            onChange={handleChange}
-            error={errors.sellingPrice}
-          />
-          <Input
-            label="Quantity"
-            name="quantity"
-            type="number"
-            onChange={handleChange}
-            error={errors.quantity}
-          />
-          <Input
-            label="Date Added"
-            name="dateAdded"
-            type="date"
-            onChange={handleChange}
-            error={errors.dateAdded}
-          />
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Phone Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-            {errors.image && (
-              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
-            )}
-          </div>
-
-          <div className="col-span-1 md:col-span-2 text-right">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all"
-            >
-              Submit Phone
-            </button>
-          </div>
-        </form>
+                {selectedPhoneId === phone.id && (
+                  <div className="mt-4 w-full text-left text-sm bg-gray-50 p-3 rounded-lg">
+                    <p>
+                      <strong>Name:</strong> {phone.name}
+                    </p>
+                    <p>
+                      <strong>Price:</strong> ${phone.price.toFixed(2)}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {phone.description}
+                    </p>
+                    <p>
+                      <strong>Specifications:</strong> {phone.specs}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-4 mt-5">
@@ -227,51 +175,6 @@ export default function PhoneForm() {
           <p>&copy; 2025 Grand Mobile. All Rights Reserved.</p>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function Input({ label, name, type = "text", onChange, error }) {
-  return (
-    <div className="flex flex-col">
-      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
-        {label}
-      </label>
-      <input
-        type={type}
-        name={name}
-        id={name}
-        onChange={onChange}
-        className="border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-    </div>
-  );
-}
-
-function Select({ label, name, options, value, onChange, error }) {
-  return (
-    <div className="flex flex-col">
-      <label htmlFor={name} className="mb-1 font-medium text-gray-700">
-        {label}
-      </label>
-      <select
-        name={name}
-        id={name}
-        value={value}
-        onChange={onChange}
-        className="border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="" disabled hidden>
-          Select one
-        </option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }
